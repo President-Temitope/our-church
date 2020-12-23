@@ -59,7 +59,6 @@ class IncomeController extends Controller
         $this->validate($request, [
             'income_type' => 'required',
             'amount' => 'required',
-            'transaction_type' => 'required',
             'date_received' => 'required',
             'description' => 'required',
             'paid_by' => 'nullable',
@@ -69,7 +68,7 @@ class IncomeController extends Controller
         $income = new Income;
         $income->income_type = $request->input('income_type');
         $income->amount = $request->input('amount');
-        $income->transaction_type = $request->input('transaction_type');
+       // $income->transaction_type = $request->input('transaction_type');
         $income->date_received = $request->input('date_received');
         $income->description = $request->input('description');
         $income->paid_by = $request->input('paid_by');

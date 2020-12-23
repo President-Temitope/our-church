@@ -1,20 +1,23 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Income;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Transaction;
-use Paystack;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Unicodeveloper\Paystack\Paystack;
 use Illuminate\Support\Facades\Auth;
 
-class PaymentController extends Controller
+class PaymentsController extends Controller
 {
 
     /**
      * Redirect the User to Paystack Payment Page
-     * @return Url
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
     public function redirectToGateway()
     {
@@ -28,14 +31,20 @@ class PaymentController extends Controller
     public function handleGatewayCallback()
     {
         $paymentDetails = Paystack::getPaymentData();
-        // SELECT `id`, `user_id`, `reference`, `email`, `amount`, `status`, `payment_date`, `created_at`, `updated_at` FROM `transactions` WHERE 1
-        // dd($paymentDetails);
-        // var_dump($paymentDetails['data']['status']);
+
         if($paymentDetails['data']['status'] == 'success')
         {
-            flash('Transaction Done Successfully');
+            Session::Flash('Transaction Done Successfully');
+           /* $income = new Income;
+            $income->income_type = $paymentDetails['data']['income_type'];
+            $income->amount = $paymentDetails['data']['amount'] * 100;
+            $income->transaction_status = 'PENDING';
+            $income->date_received = Carbon::now();
+            $income->description = $request->input('description');
+            $income->paid_by = auth()->user();
+            $income->save();*/
         }else{
-            flash('Transaction not Successful');
+            Session::Flash('Transaction not Successful');
         }
         $transaction= new Transaction;
         $transaction->user_id = Auth::user()->id;
@@ -45,6 +54,7 @@ class PaymentController extends Controller
         $transaction->status= $paymentDetails['data']['status'];
         $transaction->payment_date=$paymentDetails['data']['transaction_date'];
         $transaction->save();
+
         return redirect()
             ->route('home');
         // Now you have the payment details,

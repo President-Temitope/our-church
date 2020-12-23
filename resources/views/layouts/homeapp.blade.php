@@ -62,6 +62,8 @@
                                 <a class="dropdown-item" href={{ url('/expense/create') }}><span class="uk-margin-small-right" uk-icon="icon: push"></span> Add Expense</a>
                                 <a class="dropdown-item" href={{ url('/sermons/create') }}><span class="uk-margin-small-right" uk-icon="icon: bookmark"></span> Add Sermon</a>
                                 <a class="dropdown-item" href={{ url('/conferences/create') }}><span class="uk-margin-small-right" uk-icon="icon: calendar"></span> Add Event</a>
+                                <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Pay</button>
+
                             </div>
                         </li>
                         <li class="nav-item dropdown">
@@ -134,6 +136,50 @@
         <main class="py-4">
             @include('inc.messages')
             @yield('content')
+            <!-- Trigger the modal with a button -->
+                <!-- Modal -->
+                <div id="myModal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">Pay</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" action="{{ route('pay') }}" accept-charset="UTF-8" class="form-horizontal" role="form">
+                                    @csrf
+                                    <div class="row" style="margin-bottom:40px;">
+                                        <div class="col-md-8 col-md-offset-2">
+                                            <input type="text" name="email" value="{{auth()->user()->email}}" disabled > {{-- required --}}
+                                            <input type="text" name="amount"> {{-- required in kobo --}}
+{{--                                            <input type="hidden" name="quantity" value="3">--}}
+                                            <input type="hidden" name="currency" value="NGN">
+{{--                                            <input type="hidden" name="metadata" value="{{ json_encode($array = ['key_name' => 'value',]) }}" > --}}{{-- For other necessary things you want to add to your payload. it is optional though --}}
+                                            <input type="hidden" name="reference" value="{{ Paystack::genTranxRef() }}"> {{-- required --}}
+
+
+                                            {{-- <input type="hidden" name="_token" value="{{ csrf_token() }}"> employ this in place of csrf_field only in laravel 5.0 --}}
+
+
+                                            <p>
+                                                <button class="btn btn-success btn-lg btn-block" type="submit" value="Pay Now!">
+                                                    <i class="fa fa-plus-circle fa-lg"></i> Pay Now!
+                                                </button>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
         </main>
     </div>
 
